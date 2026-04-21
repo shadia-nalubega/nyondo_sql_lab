@@ -37,3 +37,94 @@ The output :
 (5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)
 
 screenshots/Task1.png
+
+
+/TASK 2
+# this is query A.
+# creating every column of every product
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+conn.execute('''
+SELECT *
+FROM products;             
+
+''')
+print("\nQuery A Results:")
+print(conn.execute('SELECT * FROM products;').fetchall())
+#this is the second query B. Get only the name and price of all products
+conn.execute('''
+SELECT name,price
+FROM products;
+''')
+print("\nQuery B Results:")
+print(conn.execute('SELECT name, price FROM products;').fetchall())
+# this is query c
+
+# this query C. Get full details of the product with id = 3
+conn.execute('''
+SELECT name,price
+FROM products
+WHERE id = 3;
+''')
+print("\nQuery C Results:")
+print(conn.execute('SELECT * FROM products WHERE id = 3;').fetchall())
+# this is query D use the particial match
+conn.execute('''
+SELECT name
+FROM products
+WHERE name LIKE '%sheet%';
+''')
+print("\nQuery D Results:")
+print(conn.execute("SELECT * FROM products WHERE name LIKE '%sheet%';").fetchall())
+# this is query E
+conn.execute('''
+SELECT *
+FROM products
+ORDER BY price DESC;
+''')
+print("\nQuery E Results:")
+print(conn.execute('SELECT * FROM products ORDER BY price DESC;').fetchall())
+# this is query f
+conn.execute('''
+SELECT *
+FROM products
+ORDER BY price DESC
+LIMIT 2;
+''')
+print("\nQuery F Results:")
+print(conn.execute('SELECT * FROM products ORDER BY price DESC LIMIT 2;').fetchall())
+# this is Query G updating the price of cement
+conn.execute('''
+UPDATE products
+SET
+Price = 38000
+WHERE id = 1;
+''')
+conn.commit()
+print("\nQuery G Results (Updated Cement):")
+print(conn.execute('SELECT * FROM products WHERE id = 1;').fetchall())
+
+the output from the terminal
+Query A Results:
+[(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0), (2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)]
+
+Query B Results:
+[('Cement (bag)', 38000.0), ('Iron Sheet 3m', 110000.0), ('Paint 5L', 60000.0), ('Nails 1kg', 12000.0), ('Timber 2x4', 25000.0)]
+
+Query C Results:
+[(3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0)]
+
+Query D Results:
+[(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0)]
+
+Query E Results:
+[(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0), (5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0)]
+
+Query F Results:
+[(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0)]
+
+Query G Results (Updated Cement):
+[(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0)]
+
+shadia@CYBERSPACE MINGW64 ~/Desktop/nyondo_sql_lab (main)
+$ 
