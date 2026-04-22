@@ -128,6 +128,7 @@ Query G Results (Updated Cement):
 
 shadia@CYBERSPACE MINGW64 ~/Desktop/nyondo_sql_lab (main)
 $ 
+screenshots/task2.png
 
 VULNERABLES
 import sqlite3
@@ -194,3 +195,57 @@ Explanation
 This parameterized queries prevent SQL injection — malicious input cannot alter the query logic.”
 the attack is treated as literal input due to the {%%} parameterized query and so the database will go into the tables and look for the information inside the query
 when not found, it says not found.
+   VALIDATION
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+
+# TODO: rewrite using ? placeholder - never use f-strings in SQL
+def search_product_safe(name):
+    # your code here
+    query = "SELECT * FROM products WHERE name LIKE ?"
+    print(f'Query: {query}')
+    rows = conn.execute(query, ('%' + name + '%',)).fetchall()
+    print(f'Result: {rows}\n')
+    return rows
+
+def login_safe(username, password):
+    # your code here
+    query = "SELECT * FROM users WHERE username=? AND password=?"
+    print(f'Query: {query}')
+    row = conn.execute(query, (username, password)).fetchone()
+    print(f'Result: {row}\n')
+    return row
+
+# These must ALL return [] or None when you run them
+# print('Test 1:', search_product_safe("' OR 1=1--"))
+# print('Test 2:', search_product_safe("' UNION SELECT id,username,password,role FROM users--"))
+# print('Test 3:', login_safe("admin'--", 'anything'))
+# print('Test 4:', login_safe("' OR '1'='1", "' OR '1'='1"))
+
+print('Test 5:', search_product_safe('cement'))  # -> works normally
+print('Test 6:', search_product_safe(''))  # -> rejected
+print('Test 7:', search_product_safe('<script>'))  # -> rejected
+  # -> works
+  # -> rejected (too short)
+print('Test 10:', login_safe('ad min', 'pass123'))  # -> rejected (space in username)
+print('Test 9:', login_safe('admin', 'ab'))
+print('Test 8:', login_safe('admin', 'admin123'))
+
+OUTPUT
+Query: SELECT * FROM products WHERE name LIKE ?
+Result: []
+
+Test 7: []
+Query: SELECT * FROM users WHERE username=? AND password=?
+Result: (1, 'admin', 'admin123', 'admin')
+
+Test 8: (1, 'admin', 'admin123', 'admin')
+Query: SELECT * FROM users WHERE username=? AND password=?
+Result: None
+
+Test 9: None
+Query: SELECT * FROM users WHERE username=? AND password=?
+Result: None
+
+Test 10: None
+PS C:\Users\shadia\Desktop\nyondo_sql_lab> 
