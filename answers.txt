@@ -161,3 +161,36 @@ Combined with OR, the WHERE clause becomes true for every row.
 Result: Login succeeds regardless of credentials.
 search_product("' UNION SELECT id, username, password, role FROM users--")
 the union select merges data from other users hence the attacker forces the query to disclose data from other other rows
+
+FIX ATTACKS
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+
+# TODO: rewrite using ? placeholder - never use f-strings in SQL
+def search_product_safe(name):
+    # your code here
+    query = "SELECT * FROM products WHERE name LIKE ?"
+    print(f'Query: {query}')
+    rows = conn.execute(query, ('%' + name + '%',)).fetchall()
+    print(f'Result: {rows}\n')
+    return rows
+
+def login_safe(username, password):
+    # your code here
+    query = "SELECT * FROM users WHERE username=? AND password=?"
+    print(f'Query: {query}')
+    row = conn.execute(query, (username, password)).fetchone()
+    print(f'Result: {row}\n')
+    return row
+
+# These must ALL return [] or None when you run them
+print('Test 1:', search_product_safe("' OR 1=1--"))
+print('Test 2:', search_product_safe("' UNION SELECT id,username,password,role FROM users--"))
+print('Test 3:', login_safe("admin'--", 'anything'))
+print('Test 4:', login_safe("' OR '1'='1", "' OR '1'='1"))
+
+EMPTY OUTPUT Test 4: None
+Explanation
+This parameterized queries prevent SQL injection — malicious input cannot alter the query logic.”
+the attack is treated as literal input due to the {%%} parameterized query and so the database will go into the tables and look for the information inside the query
+when not found, it says not found.
